@@ -1,5 +1,5 @@
-import http from "http";
-import crypto from "crypto";
+import http from "node:http";
+import crypto from "node:crypto";
 import fetch from "node-fetch";
 
 const appKey = "105827";
