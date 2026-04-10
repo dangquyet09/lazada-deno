@@ -20,6 +20,7 @@ const server = http.createServer(async (req, res) => {
       page_size: 20,
     };
 
+    // sort params
     const sorted = Object.keys(params).sort();
 
     let signStr = method;
@@ -33,18 +34,33 @@ const server = http.createServer(async (req, res) => {
       .digest("hex")
       .toUpperCase();
 
+    // ✅ FIX ENDPOINT (QUAN TRỌNG)
     const url =
-      "https://gw.api.taobao.com/router/rest?" +
+      "https://api.lazada.vn/rest?" +
       new URLSearchParams({ ...params, sign });
 
+    console.log("CALL API:", url);
+
     const response = await fetch(url);
+
+    // 👉 nếu API lỗi sẽ thấy rõ
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error("API ERROR: " + text);
+    }
+
     const data = await response.json();
 
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(data, null, 2));
+
   } catch (err) {
+    console.error("ERROR:", err);
+
     res.writeHead(500);
-    res.end(JSON.stringify({ error: err.message }));
+    res.end(JSON.stringify({
+      error: err.message
+    }));
   }
 });
 
