@@ -1,7 +1,6 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import crypto from "node:crypto";
 
-serve(async () => {
+export default async function handler(req: Request): Promise<Response> {
   try {
     const appKey = "105827";
     const appSecret = "r8ZMKhPxu1JZUCwTUBVMJiJnZKjhWeQF";
@@ -46,4 +45,4 @@ serve(async () => {
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }));
   }
-});
+}
