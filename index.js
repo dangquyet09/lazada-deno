@@ -7,12 +7,10 @@ const accessToken = "3596c94c71b8484b9f9431cc";
 
 const server = http.createServer(async (req, res) => {
   try {
-    const method = "lazada.affiliate.product.feed";
     const timestamp = Date.now();
 
     const params = {
       app_key: appKey,
-      method,
       timestamp,
       access_token: accessToken,
       sign_method: "sha256",
@@ -23,7 +21,7 @@ const server = http.createServer(async (req, res) => {
     // sort params
     const sorted = Object.keys(params).sort();
 
-    let signStr = method;
+    let signStr = "";
     sorted.forEach((k) => {
       signStr += k + params[k];
     });
@@ -34,20 +32,14 @@ const server = http.createServer(async (req, res) => {
       .digest("hex")
       .toUpperCase();
 
-    // ✅ FIX ENDPOINT (QUAN TRỌNG)
+    // ✅ endpoint đúng
     const url =
-      "https://api.lazada.vn/rest?" +
+      "https://api.lazada.vn/rest/affiliate/products/get?" +
       new URLSearchParams({ ...params, sign });
 
     console.log("CALL API:", url);
 
     const response = await fetch(url);
-
-    // 👉 nếu API lỗi sẽ thấy rõ
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error("API ERROR: " + text);
-    }
 
     const data = await response.json();
 
@@ -55,12 +47,8 @@ const server = http.createServer(async (req, res) => {
     res.end(JSON.stringify(data, null, 2));
 
   } catch (err) {
-    console.error("ERROR:", err);
-
     res.writeHead(500);
-    res.end(JSON.stringify({
-      error: err.message
-    }));
+    res.end(JSON.stringify({ error: err.message }));
   }
 });
 
